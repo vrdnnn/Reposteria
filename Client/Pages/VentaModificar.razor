@@ -1,0 +1,72 @@
+﻿@page "/pedidos/modificar/{Id:int}"
+@using Act17.Shared.Models
+@inject HttpClient http
+@inject NavigationManager navegar
+
+<h3>Modificar pedido</h3>
+<EditForm Model="laVenta" OnValidSubmit="Modificar">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="nombre" class="form-label">Monto</label>
+        <InputNumber id="nombre" class="form-control" @bind-Value="laVenta.Monto" />
+        <ValidationMessage For="(()=>laVenta.Monto)" />
+    </div>
+    <div class="mb-3">
+        <label for="correo" class="form-label">Cantidad de productos</label>
+        <InputNumber class="form-control" id="correo" @bind-Value="laVenta.Cantidad" />
+        <ValidationMessage For="(()=>laVenta.Cantidad)" />
+    </div>
+    <div class="mb-3">
+        <label for="fecha" class="form-label">Fecha de venta</label>
+        <InputDate class="form-control" id="fecha" @bind-Value="laVenta.Fecha_venta" />
+        <ValidationMessage For="(()=>laVenta.Fecha_venta)" />
+    </div>
+    <div class="mb-3">
+        <label for="clienteid" class="form-label">Id del cliente</label>
+        <InputNumber class="form-control" id="clienteid" @bind-Value="laVenta.ClienteId" />
+        <ValidationMessage For="(()=>laVenta.ClienteId)" />
+    </div>
+    @*<div class="mb-3">
+    <label for="productos" class="form-label">Ids de los productos</label>
+    <InputNumber class="form-control" id="productos" @bind-Value="laVenta.ProductoIds" />
+    </div>
+    *@
+    <div class="mb-3">
+        <label for="productos" class="form-label">Ids de los productos</label>
+        <InputText class="form-control" id="productos" @bind-Value="ProductosString" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mx-2">Guardar</button>
+    <button type="button" class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Pedido laVenta = new Pedido();
+    private string ProductosString { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        laVenta = await http.GetFromJsonAsync<Pedido>($"api/pedidoes/{Id}");
+    }
+    private async void Modificar()
+
+    {
+        if (!string.IsNullOrEmpty(ProductosString))
+        {
+            laVenta.ProductoIds = ProductosString.Replace(" ", "")
+                .Split(',')
+                .Select(id => int.Parse(id.Trim()))
+                .ToList();
+        }
+
+        await http.PutAsJsonAsync($"api/pedidoes/{Id}", laVenta);
+        navegar.NavigateTo("/pedidos");
+    }
+    private void Cancelar()
+    {
+        navegar.NavigateTo("/pedidos");
+    }
+}
