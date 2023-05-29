@@ -3,7 +3,8 @@
 @inject HttpClient http
 @inject NavigationManager navegar
 
-<h3 class="my-2">Pedidos pendientes:</h3>
+<h3 class="my-2">P E D I D O S</h3>
+<button class="btn-secondary" @onclick="Agregar">Agregar pedido<span class="oi oi-plus mx-2"></span></button>
 
 @if (lasVentas == null)
 
@@ -59,7 +60,7 @@ else
         </tbody>
     </table>
 }
-<button class="btn-secondary" @onclick="Agregar">Agregar pedido<span class="oi oi-plus mx-2"></span></button>
+
 @code {
     private List<Pedido> lasVentas;
 
